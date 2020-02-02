@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name" translatable="false">Stick</string>
+    <string name="check">check</string>
+</resources>
