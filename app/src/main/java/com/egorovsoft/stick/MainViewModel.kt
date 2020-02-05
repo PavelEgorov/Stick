@@ -3,16 +3,14 @@ package com.egorovsoft.stick
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.egorovsoft.stick.data.Repository
 
 class MainViewModel : ViewModel(){
-    private val stateLiveData : MutableLiveData<String> = MutableLiveData();
+    private val stateLiveData : MutableLiveData<MainViewState> = MutableLiveData();
 
     init {
-        stateLiveData.value = "Hello teacher!"
+        stateLiveData.value = MainViewState(Repository.getNotes())
     }
 
-    fun viewState(): LiveData<String> = stateLiveData;
-    fun viewUpdate() {
-        stateLiveData.value = "Ups! ^_^"
-    }
+    fun viewState(): LiveData<MainViewState> = stateLiveData;
 }
