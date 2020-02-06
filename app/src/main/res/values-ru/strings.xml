@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="check">проверить</string>
+    <string name="new_note_title">новый заголовок</string>
+    <string name="new_">добавить</string>
 </resources>

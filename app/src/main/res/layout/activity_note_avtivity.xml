@@ -8,7 +8,7 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar"
+        android:id="@+id/noteAppbar"
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -17,40 +17,49 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
 
-            app:toolbarId="@+id/toolbar">
+            app:toolbarId="@+id/noteToolbar">
 
 
             <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
+                android:id="@+id/noteToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"></androidx.appcompat.widget.Toolbar>
-
-            <Button
-                android:id="@+id/btnNew"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/new_" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
 
 
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/mainRecycler"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:spanCount="2"
-            tools:listitem="@layout/item_note" >
+            android:layout_height="match_parent"
+            tools:context=".activitys.note.NoteAvtivity"
+            android:orientation="vertical">
 
-        </androidx.recyclerview.widget.RecyclerView>
+            <EditText
+                android:id="@+id/txtNoteTitle"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Name" />
+
+            <EditText
+                android:id="@+id/txtNoteBody"
+                style="@style/TextAppearance.AppCompat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName" />
+        </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 
 
