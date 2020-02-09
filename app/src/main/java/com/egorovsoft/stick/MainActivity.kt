@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.egorovsoft.stick.activitys.note.NoteAvtivity
 import com.egorovsoft.stick.adapters.MainAdapter
+import com.egorovsoft.stick.adapters.MainAdapter.OnItemClickListener
+import com.egorovsoft.stick.data.Note
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -18,15 +21,23 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        adapter = MainAdapter()
+        adapter = MainAdapter {note ->
+            openNoteScreen(note)
+        }
         mainRecycler.adapter = adapter
 
         viewModel.viewState().observe(this, Observer<MainViewState> { t ->
             t?.let { adapter.notes = it.notes }
         })
 
-//        btnCheck.setOnClickListener(View.OnClickListener {
-//            viewModel.viewUpdate();
-//        })
+        btnNew.setOnClickListener {
+            openNoteScreen(null)
+        }
     }
+
+    private fun openNoteScreen(note: Note?) {
+        val intent = NoteAvtivity.getStartIntent(this, note)
+        startActivity(intent)
+    }
+
 }
