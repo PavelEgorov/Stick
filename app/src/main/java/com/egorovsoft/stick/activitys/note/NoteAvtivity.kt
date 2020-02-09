@@ -58,6 +58,7 @@ class NoteAvtivity : AppCompatActivity() {
                 note = note?.copy(title = txtNoteTitle.text.toString(),
                     note = txtNoteBody.text.toString(),
                     lastChanged = Date())
+                    ?: createNewNote()
 
                 note?.let { viewModel.saveChanges(it)}
 

@@ -53,7 +53,7 @@ object Repository {
 
     private fun addOrReplace(note: Note) {
 
-        for (i in 0 until notes.size) {
+        for (i in notes.indices) {
             if (notes[i] == note) {
                 notes.set(i, note)
                 return

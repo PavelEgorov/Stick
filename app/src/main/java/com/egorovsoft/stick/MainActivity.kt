@@ -6,7 +6,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.egorovsoft.stick.activitys.note.NoteAvtivity
 import com.egorovsoft.stick.adapters.MainAdapter
-import com.egorovsoft.stick.adapters.MainAdapter.OnItemClickListener
 import com.egorovsoft.stick.data.Note
 import kotlinx.android.synthetic.main.activity_main.*
 
