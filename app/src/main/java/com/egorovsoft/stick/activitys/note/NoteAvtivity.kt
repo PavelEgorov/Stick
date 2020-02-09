@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.egorovsoft.stick.R
+import com.egorovsoft.stick.base.BaseActivity
 import com.egorovsoft.stick.data.Note
 import kotlinx.android.synthetic.main.activity_note_avtivity.*
 import java.text.SimpleDateFormat
@@ -21,66 +22,67 @@ import com.egorovsoft.stick.extensions.DATE_TIME_FORMAT
 
 private const val SAVE_DELAY = 2000L
 
-class NoteAvtivity : AppCompatActivity() {
+class NoteAvtivity : BaseActivity<Note?, NoteViewState>(){
 
     companion object {
         private val EXTRA_NOTE = NoteAvtivity::class.java.name + "extra.NOTE"
 
-        fun getStartIntent(context: Context, note: Note?): Intent {
+        fun getStartIntent(context: Context, note: String?): Intent {
             val intent = Intent(context, NoteAvtivity::class.java)
             intent.putExtra(EXTRA_NOTE, note)
             return intent
         }
     }
 
+    override val layoutRes = R.layout.activity_note_avtivity
+    override val viewModel: NoteViewModel by lazy { ViewModelProvider(this).get(NoteViewModel::class.java) }
     private var note: Note? = null
-    private lateinit var viewModel: NoteViewModel
 
     private val textChangeListener = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
             triggerSaveNote()
         }
-
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            // not used
-        }
-
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            // not used
-        }
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int){}
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int){}
     }
 
     private fun triggerSaveNote() {
 
         if (txtNoteTitle.text == null || txtNoteBody.text!!.length < 3) return
 
-        Handler().postDelayed({
-                note = note?.copy(title = txtNoteTitle.text.toString(),
-                    note = txtNoteBody.text.toString(),
-                    lastChanged = Date())
-                    ?: createNewNote()
+        note = note?.copy(
+            title = txtNoteTitle.text.toString(),
+            note = txtNoteBody.text.toString(),
+            lastChanged = Date()
+        ) ?: Note(
+            UUID.randomUUID().toString(),
+            txtNoteTitle.text.toString(),
+            txtNoteBody.text.toString()
+        )
 
-                note?.let { viewModel.saveChanges(it)}
-
-        }, SAVE_DELAY)
+        note?.let { viewModel.saveChanges(it) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_note_avtivity)
-
-        viewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
-
-        note = intent.getParcelableExtra(EXTRA_NOTE)
         setSupportActionBar(noteToolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        supportActionBar?.title = if (note != null) {
-            SimpleDateFormat(DATE_TIME_FORMAT,
-                Locale.getDefault()).format(note!!.lastChanged)
-        } else {
-            getString(R.string.new_note_title)
+        val noteid = intent.getStringExtra(EXTRA_NOTE)
+
+        noteid?.let {
+            viewModel.loadNote(it)
+        } ?: let {
+            supportActionBar?.title = getString(R.string.new_note_title)
         }
+    }
+
+    override fun renderData(data: Note?) {
+        this.note = data
+        supportActionBar?.title = this.note?.let {
+            SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(note!!.lastChanged)
+        } ?: getString(R.string.new_note_title)
 
         initView()
     }
