@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MenuItem
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.egorovsoft.stick.R
@@ -49,16 +51,15 @@ class NoteAvtivity : AppCompatActivity() {
     }
 
     private fun triggerSaveNote() {
+
         if (txtNoteTitle.text == null || txtNoteBody.text!!.length < 3) return
 
-        Handler().postDelayed(object : Runnable {
-            override fun run() {
+        Handler().postDelayed({
                 note = note?.copy(title = txtNoteTitle.text.toString(),
                     note = txtNoteBody.text.toString(),
                     lastChanged = Date())
 
-                if (note != null) viewModel.saveChanges(note!!)
-            }
+                note?.let { viewModel.saveChanges(it)}
 
         }, SAVE_DELAY)
     }
@@ -84,10 +85,10 @@ class NoteAvtivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        if (note != null) {
-            txtNoteTitle.setText(note?.title ?: "")
-            txtNoteBody.setText(note?.note ?: "")
-            val color = when(note!!.color) {
+        note?.let {
+            txtNoteTitle.setText(it.title)
+            txtNoteBody.setText(it.note)
+            val color = when (it.color) {
                 Color.WHITE -> R.color.color_white
                 Color.YELLOW -> R.color.color_yello
                 Color.RED -> R.color.color_red
@@ -96,9 +97,19 @@ class NoteAvtivity : AppCompatActivity() {
                 else -> R.color.color_green
             }
 
-            noteToolbar.setBackgroundColor(resources.getColor(color))
-            txtNoteTitle.addTextChangedListener(textChangeListener)
-            txtNoteBody.addTextChangedListener(textChangeListener)
+            noteToolbar.setBackgroundColor(ContextCompat.getColor(this, color))
         }
+        txtNoteTitle.addTextChangedListener(textChangeListener)
+        txtNoteBody.addTextChangedListener(textChangeListener)
+    }
+
+    private fun createNewNote(): Note = Note(UUID.randomUUID().toString(), txtNoteTitle.text.toString(), txtNoteBody.text.toString())
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        android.R.id.home -> {
+            onBackPressed()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 }

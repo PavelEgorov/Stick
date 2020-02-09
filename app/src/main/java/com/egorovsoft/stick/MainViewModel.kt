@@ -16,4 +16,9 @@ class MainViewModel : ViewModel(){
     }
 
     fun viewState(): LiveData<MainViewState> = stateLiveData;
+
+    override fun onCleared() {
+        super.onCleared()
+        println("onCleared")
+    }
 }

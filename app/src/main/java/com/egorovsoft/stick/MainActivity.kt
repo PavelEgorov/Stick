@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
             t?.let { adapter.notes = it.notes }
         })
 
-        btnNew.setOnClickListener {
+        fab.setOnClickListener {
             openNoteScreen(null)
         }
     }

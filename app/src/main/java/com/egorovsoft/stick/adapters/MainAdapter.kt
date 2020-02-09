@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.egorovsoft.stick.R
 import com.egorovsoft.stick.data.Note
@@ -11,27 +13,21 @@ import com.egorovsoft.stick.data.Note.Color
 
 class MainAdapter(val onItemViewClick : ((note: Note) -> Unit)? = null) : RecyclerView.Adapter<MainAdapter.NoteViewHolder>() {
 
-    interface OnItemClickListener {
-        fun onItemClick(note: Note)
-    }
-
     var notes: List<Note> = listOf()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.item_note, parent, false)
-        return NoteViewHolder(view)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder =
+        NoteViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.item_note, parent, false)
+        )
+
 
     override fun getItemCount() = notes.size
 
-    override fun onBindViewHolder(holder: NoteViewHolder, position: Int): Unit {
-        holder.bind(notes[position])
-    }
+    override fun onBindViewHolder(holder: NoteViewHolder, position: Int) = holder.bind(notes[position])
 
     inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val title = itemView.findViewById<TextView>(R.id.title)
@@ -49,7 +45,8 @@ class MainAdapter(val onItemViewClick : ((note: Note) -> Unit)? = null) : Recycl
                 else -> R.color.color_green
             }
 
-            itemView.setBackgroundColor(color)
+            itemView.setBackgroundColor(ContextCompat.getColor(itemView.context, color))
+
             itemView.setOnClickListener { onItemViewClick?.invoke(note) }
         }
     }

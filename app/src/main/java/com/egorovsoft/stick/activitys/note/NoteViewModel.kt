@@ -4,8 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.egorovsoft.stick.data.Note
 import com.egorovsoft.stick.data.Repository
 
-class NoteViewModel(private val repository: Repository = Repository) : ViewModel() {
-
+class NoteViewModel() : ViewModel() {
 
     private var pendingNote: Note? = null
 
@@ -14,8 +13,8 @@ class NoteViewModel(private val repository: Repository = Repository) : ViewModel
     }
 
     override fun onCleared() {
-        if (pendingNote != null) {
-            repository.saveNote(pendingNote!!)
+        pendingNote?.let {
+            Repository.saveNote(it)
         }
     }
 }
