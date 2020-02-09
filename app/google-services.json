@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "237344985151",
+    "firebase_url": "https://stick-576ee.firebaseio.com",
+    "project_id": "stick-576ee",
+    "storage_bucket": "stick-576ee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:237344985151:android:f94dfebbee174b27b1288a",
+        "android_client_info": {
+          "package_name": "com.egorovsoft.stick"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "237344985151-11iarhhgnbehujkp8ejje2u0o5n1un97.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.egorovsoft.stick",
+            "certificate_hash": "25966d402c486c61ce288c1713c27be994cb05c8"
+          }
+        },
+        {
+          "client_id": "237344985151-ps2bot0gb93umh25qg4ildslklc5uusc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBf3S7aonbWJTNzQNUP5pwa6DauCRaUWTc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "237344985151-ps2bot0gb93umh25qg4ildslklc5uusc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
