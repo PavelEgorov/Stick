@@ -106,8 +106,6 @@ class NoteAvtivity : BaseActivity<Note?, NoteViewState>(){
         txtNoteBody.addTextChangedListener(textChangeListener)
     }
 
-    private fun createNewNote(): Note = Note(UUID.randomUUID().toString(), txtNoteTitle.text.toString(), txtNoteBody.text.toString())
-
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         android.R.id.home -> {
             onBackPressed()
