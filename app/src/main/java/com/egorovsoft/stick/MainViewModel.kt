@@ -2,18 +2,40 @@ package com.egorovsoft.stick
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.Observer
+import com.egorovsoft.stick.activitys.note.NoteResult
+import com.egorovsoft.stick.base.BaseViewModel
+import com.egorovsoft.stick.data.Note
 import com.egorovsoft.stick.data.Repository
 
-class MainViewModel : ViewModel(){
-    private val stateLiveData : MutableLiveData<MainViewState> = MutableLiveData();
+class MainViewModel : BaseViewModel<List<Note>?, MainViewState>() {
+    private val notesObserver = object : Observer<NoteResult> {
+        override fun onChanged(t: NoteResult?) {
+            t ?: return
 
-    init {
-        Repository.getNotes().observeForever {notes ->
-            stateLiveData.value = stateLiveData.value?.copy(notes = notes) ?: MainViewState(notes)
+            when(t){
+                is NoteResult.Success<*> -> {
+                    viewStateLiveData.value = MainViewState(notes = t.data as? List<Note>)
+                }
+                is NoteResult.Error -> {
+                    viewStateLiveData.value = MainViewState(error = t.error)
+                }
+            }
         }
-
     }
 
-    fun viewState(): LiveData<MainViewState> = stateLiveData;
+    private val repositoryNotes = Repository.getNotes()
+
+    init {
+        viewStateLiveData.value = MainViewState()
+        repositoryNotes.observeForever(notesObserver)
+    }
+
+    fun viewState(): LiveData<MainViewState> = viewStateLiveData;
+
+    override fun onCleared() {
+        repositoryNotes.removeObserver(notesObserver)
+        super.onCleared()
+        println("onCleared")
+    }
 }

@@ -27,11 +27,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"></androidx.appcompat.widget.Toolbar>
 
-            <Button
-                android:id="@+id/btnNew"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/new_" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -53,5 +48,16 @@
         </androidx.recyclerview.widget.RecyclerView>
     </androidx.core.widget.NestedScrollView>
 
-
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="normal"
+        android:clickable="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_anchorGravity="bottom|end"
+        app:srcCompat="@android:drawable/ic_input_add"
+        app:layout_anchor="@id/mainRecycler"
+        android:focusable="true"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
