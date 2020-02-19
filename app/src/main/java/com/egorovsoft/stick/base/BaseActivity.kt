@@ -10,7 +10,7 @@ import com.egorovsoft.stick.data.errors.NoAuthException
 import com.firebase.ui.auth.AuthUI
 
 abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
-    abstract val viewModel: BaseViewModel<T, S>
+    abstract val model: BaseViewModel<T, S>
     abstract val layoutRes: Int?
 
     companion object {
@@ -20,7 +20,7 @@ abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         layoutRes?.let {  setContentView(it) }
-        viewModel.getViewState().observe(this, object : Observer<S> {
+        model.getViewState().observe(this, object : Observer<S> {
             override fun onChanged(t: S?) {
                 t ?: return
                 t.error?.let {
@@ -56,6 +56,7 @@ abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == RC_SIGN_IN && resultCode != Activity.RESULT_OK){
             finish()
         }

@@ -1,42 +1,43 @@
 package com.egorovsoft.stick.activitys.note
 
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import com.egorovsoft.stick.base.BaseViewModel
 import com.egorovsoft.stick.data.Note
 import com.egorovsoft.stick.data.Repository
 
-class NoteViewModel() : BaseViewModel<Note?, NoteViewState>() {
+class NoteViewModel(private val notesRepository: Repository) : BaseViewModel<NoteViewState.Data, NoteViewState>() {
 
-    init {
-        viewStateLiveData.value = NoteViewState()
-    }
+    private val pendingNote: Note?
+        get() = viewStateLiveData.value?.data?.note
 
-    private var pendingNote: Note? = null
-
-    fun saveChanges(note: Note) {
-        pendingNote = note
+    fun save(note: Note) {
+        viewStateLiveData.value = NoteViewState(NoteViewState.Data(note = note))
     }
 
     fun loadNote(noteId: String) {
-        Repository.getNoteById(noteId).observeForever(object : Observer<NoteResult> {
-            override fun onChanged(t: NoteResult?) {
-                t ?: return
-                when (t) {
-                    is NoteResult.Success<*> -> {
-                        viewStateLiveData.value = NoteViewState(note = t.data as Note)
-                    }
-                    is NoteResult.Error -> {
-                        viewStateLiveData.value = NoteViewState(error = t.error)
-                    }
+        notesRepository.getNoteById(noteId).observeForever { result ->
+            result?.let {
+                viewStateLiveData.value = when (result) {
+                    is NoteResult.Success<*> -> NoteViewState(NoteViewState.Data(note = result.data as Note))
+                    is NoteResult.Error -> NoteViewState(error = result.error)
                 }
             }
-        })
+        }
+    }
+
+    fun deleteNote() {
+        pendingNote?.let {
+            notesRepository.deleteNote(it.id).observeForever { result ->
+                viewStateLiveData.value = when (result) {
+                    is NoteResult.Success<*> -> NoteViewState(NoteViewState.Data(isDeleted = true))
+                    is NoteResult.Error -> NoteViewState(error = result.error)
+                }
+            }
+        }
     }
 
     override fun onCleared() {
         pendingNote?.let {
-            Repository.saveNote(it)
+            notesRepository.saveNote(it)
         }
     }
 }

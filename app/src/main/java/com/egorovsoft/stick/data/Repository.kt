@@ -1,13 +1,11 @@
 package com.egorovsoft.stick.data
 
-import com.egorovsoft.stick.data.provider.FireStoreProvider
 import com.egorovsoft.stick.data.provider.RemoteDataProvider
 
-object Repository {
-    private val remoteProvider: RemoteDataProvider = FireStoreProvider()
-
-    fun getNotes() = remoteProvider.subsrcibeToAllNotes()
+class Repository (val remoteProvider: RemoteDataProvider){
+    fun getNotes() = remoteProvider.subscribeToAllNotes()
     fun saveNote(note: Note) = remoteProvider.saveNote(note)
     fun getNoteById(id: String) = remoteProvider.getNoteById(id)
     fun getCurrentUser() = remoteProvider.getCurrentUser()
+    fun deleteNote(id: String) = remoteProvider.deleteNote(id)
 }

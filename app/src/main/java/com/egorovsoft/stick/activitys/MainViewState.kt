@@ -1,4 +1,4 @@
-package com.egorovsoft.stick
+package com.egorovsoft.stick.activitys
 
 import com.egorovsoft.stick.base.BaseViewState
 import com.egorovsoft.stick.data.Note
