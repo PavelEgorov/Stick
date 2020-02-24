@@ -6,8 +6,9 @@ import com.egorovsoft.stick.data.Note
 import com.egorovsoft.stick.data.User
 
 interface RemoteDataProvider {
-    fun subsrcibeToAllNotes(): LiveData<NoteResult>
+    fun subscribeToAllNotes(): LiveData<NoteResult>
     fun getNoteById(id: String): LiveData<NoteResult>
     fun saveNote(note: Note): LiveData<NoteResult>
     fun getCurrentUser(): LiveData<User?>
+    fun deleteNote(noteId: String): LiveData<NoteResult>
 }
