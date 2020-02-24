@@ -10,7 +10,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 
-class FireStoreProvider(private val firebaseAuth: FirebaseAuth, private val store: FirebaseFirestore) : RemoteDataProvider {
+/// provader
+class FireStoreProvider(private val firebaseAuth: FirebaseAuth, /// mockk<FirebaseAuth>
+                        private val store: FirebaseFirestore /// mockk<FirebaseFirestore>
+) : RemoteDataProvider {
 
     companion object {
         private const val NOTES_COLLECTION = "notes"
@@ -20,18 +23,20 @@ class FireStoreProvider(private val firebaseAuth: FirebaseAuth, private val stor
     private val currentUser
         get() = firebaseAuth.currentUser
 
-    private val userNotesCollection: CollectionReference
+    private val userNotesCollection: CollectionReference /// mockk<CollectionReference// >
         get() = currentUser?.let {
             store.collection(USER_COLLECTION).document(it.uid).collection(NOTES_COLLECTION)
         } ?: throw NoAuthException()
 
 
+    /// test@'user is null'
     override fun getCurrentUser() = MutableLiveData<User?>().apply {
         value = currentUser?.let { firebaseUser ->
             User(firebaseUser.displayName ?: "", firebaseUser.email ?: "")
         }
     }
 
+    /// test@''
     override fun subscribeToAllNotes() = MutableLiveData<NoteResult>().apply {
         try {
             userNotesCollection.addSnapshotListener { snapshot, e ->
@@ -48,11 +53,13 @@ class FireStoreProvider(private val firebaseAuth: FirebaseAuth, private val stor
         }
     }
 
+    ///test@'test note find by id'
+    ///test@'test error find by id'
     override fun getNoteById(id: String) = MutableLiveData<NoteResult>().apply {
         try {
             userNotesCollection.document(id).get()
-                .addOnSuccessListener { snapshot ->
-                    value = NoteResult.Success(snapshot.toObject(Note::class.java))
+                .addOnSuccessListener { snapshot -> /// mockk<QueryListener>
+                    value = NoteResult.Success(snapshot.toObject(Note::class.java)) /// assertTrue
                 }.addOnFailureListener {
                     value = NoteResult.Error(it)
                 }
@@ -61,6 +68,7 @@ class FireStoreProvider(private val firebaseAuth: FirebaseAuth, private val stor
         }
     }
 
+    ///test@'verify seveNote set'
     override fun saveNote(note: Note) = MutableLiveData<NoteResult>().apply {
         try {
             userNotesCollection.document(note.id).set(note)
@@ -74,6 +82,7 @@ class FireStoreProvider(private val firebaseAuth: FirebaseAuth, private val stor
         }
     }
 
+    ///test@'verify deleteNote delete'
     override fun deleteNote(noteId: String): LiveData<NoteResult> =MutableLiveData<NoteResult>().apply {
         try {
             userNotesCollection.document(noteId).delete()

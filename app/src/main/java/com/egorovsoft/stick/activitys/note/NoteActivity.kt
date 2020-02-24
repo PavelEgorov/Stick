@@ -78,8 +78,9 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
         setEditListener()
 
         colorPicker.onColorClickListener = {
-            noteToolbar.setBackgroundColor(color.getColorInt(this))
+            /// Цвет присваивался старый тулбару.
             color = it
+            noteToolbar.setBackgroundColor(color.getColorInt(this))
             saveNote()
         }
     }
@@ -90,8 +91,9 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
     }
 
     private fun setEditListener(){
-        txtNoteTitle.removeTextChangedListener(textChahgeListener)
-        txtNoteBody.removeTextChangedListener(textChahgeListener)
+        /// В тесте увидел, что тут у меня ошибка была :) стоял removeTextChangedListener
+        txtNoteTitle.addTextChangedListener(textChahgeListener)
+        txtNoteBody.addTextChangedListener(textChahgeListener)
     }
 
 
