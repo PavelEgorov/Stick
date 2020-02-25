@@ -1,5 +1,6 @@
 package com.egorovsoft.stick.activitys
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.egorovsoft.stick.activitys.note.NoteResult
@@ -7,8 +8,9 @@ import com.egorovsoft.stick.base.BaseViewModel
 import com.egorovsoft.stick.data.Note
 import com.egorovsoft.stick.data.Repository
 
-class MainViewModel(private val notesRepository: Repository) : BaseViewModel<List<Note>?, MainViewState>() {
-    private val notesObserver = object : Observer<NoteResult> {
+class MainViewModel(private val notesRepository: Repository /// mockk(Repository)
+) : BaseViewModel<List<Note>?, MainViewState>() {
+    private val notesObserver = object : Observer<NoteResult> {/// mockk(MutableLiveData<NoteResult>)
         override fun onChanged(t: NoteResult?) {
             t ?: return
 
@@ -32,9 +34,10 @@ class MainViewModel(private val notesRepository: Repository) : BaseViewModel<Lis
         repositoryNotes.observeForever(notesObserver)
     }
 
-    fun viewState(): LiveData<MainViewState> = viewStateLiveData;
+    override fun getViewState(): LiveData<MainViewState> = viewStateLiveData;
 
-    override fun onCleared() {
+    @VisibleForTesting
+    override public fun onCleared() {
         repositoryNotes.removeObserver(notesObserver)
         super.onCleared()
         println("onCleared")

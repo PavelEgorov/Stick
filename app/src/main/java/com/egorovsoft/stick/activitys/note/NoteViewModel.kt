@@ -1,5 +1,6 @@
 package com.egorovsoft.stick.activitys.note
 
+import androidx.annotation.VisibleForTesting
 import com.egorovsoft.stick.base.BaseViewModel
 import com.egorovsoft.stick.data.Note
 import com.egorovsoft.stick.data.Repository
@@ -35,7 +36,8 @@ class NoteViewModel(private val notesRepository: Repository) : BaseViewModel<Not
         }
     }
 
-    override fun onCleared() {
+    @VisibleForTesting
+    override public fun onCleared() {
         pendingNote?.let {
             notesRepository.saveNote(it)
         }
