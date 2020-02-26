@@ -8,7 +8,6 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.After
 import org.junit.Before
 
 import org.junit.Assert.*
@@ -40,8 +39,8 @@ class NoteViewModelTest {
 
     @Test
     fun `loadNote should return NoteViewState Data`() {
-        var result: NoteViewState.Data? = null
-        val testData = NoteViewState.Data(false, testNote)
+        var result: NoteData.Data? = null
+        val testData = NoteData.Data(false, testNote)
         viewModel.getViewState().observeForever {
             result = it.data
         }
@@ -64,8 +63,8 @@ class NoteViewModelTest {
 
     @Test
     fun `deleteNote should return NoteViewState Data wish isDeleted`() {
-        var result: NoteViewState.Data? = null
-        val testData = NoteViewState.Data(true, null)
+        var result: NoteData.Data? = null
+        val testData = NoteData.Data(true, null)
         viewModel.getViewState().observeForever {
             result = it.data
         }

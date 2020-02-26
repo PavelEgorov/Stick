@@ -2,14 +2,11 @@ package com.egorovsoft.stick.activitys.note
 
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
-import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.rule.ActivityTestRule
 import com.egorovsoft.stick.R
@@ -26,7 +23,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.android.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module
-import org.koin.standalone.StandAloneContext
 import org.koin.standalone.StandAloneContext.loadKoinModules
 import org.koin.standalone.StandAloneContext.stopKoin
 
@@ -36,7 +32,7 @@ class NoteActivityTest {
     val activityTestRule = ActivityTestRule(NoteActivity::class.java, true, false)
 
     private val model: NoteViewModel = mockk(relaxed = true)
-    private val viewStateLiveData = MutableLiveData<NoteViewState>()
+    private val viewStateLiveData = MutableLiveData<NoteData>()
 
     private val testNote = Note("1", "title1", "text1")
 
@@ -103,7 +99,7 @@ class NoteActivityTest {
     @Test
     fun should_show_note() {
         activityTestRule.launchActivity(null)
-        viewStateLiveData.postValue(NoteViewState(NoteViewState.Data(note = testNote)))
+        viewStateLiveData.postValue(NoteData(NoteData.Data(note = testNote)))
 
         onView(withId(R.id.txtNoteTitle)).check(matches(withText(testNote.title)))
         onView(withId(R.id.txtNoteBody)).check(matches(withText(testNote.note)))

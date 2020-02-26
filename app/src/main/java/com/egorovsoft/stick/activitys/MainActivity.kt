@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModelProvider
 import com.egorovsoft.stick.R
 import com.egorovsoft.stick.activitys.note.NoteActivity
@@ -19,7 +20,7 @@ import com.firebase.ui.auth.AuthUI
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.alert
 
-class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
+class MainActivity : BaseActivity<List<Note>?>() {
     companion object {
         fun start(context: Context) = Intent(context, MainActivity::class.java).apply {
             context.startActivity(this)

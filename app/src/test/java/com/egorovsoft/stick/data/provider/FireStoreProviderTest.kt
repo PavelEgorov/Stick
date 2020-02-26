@@ -11,6 +11,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.auth.User
 import io.mockk.*
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -57,7 +59,7 @@ class FireStoreProviderTest {
     }
 
     @Test
-    fun getCurrentUser() {
+    fun getCurrentUser() = runBlocking {
         var result: Any? = null
         every { mockkAuth.currentUser } returns null
         privader.subscribeToAllNotes().observeForever{
