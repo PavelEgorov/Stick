@@ -51,8 +51,8 @@ class MainActivityTest {
         loadKoinModules(
             listOf(
                 module {
-                    viewModel { model }
-                    viewModel { mockk<NoteViewModel>(relaxed = true) }
+                    viewModel(override = true) { model }
+                    viewModel(override = true) { mockk<NoteViewModel>(relaxed = true) }
                 }
             )
         )

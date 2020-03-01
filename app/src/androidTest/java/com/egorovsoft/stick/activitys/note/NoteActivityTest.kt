@@ -40,7 +40,7 @@ class NoteActivityTest {
 
     @Before
     fun setUp() {
-        loadKoinModules(listOf(module { viewModel { model } }))
+        loadKoinModules(listOf(module { viewModel(override = true) { model } }))
         every { model.getViewState() } returns viewStateChannel.openSubscription()
         every { model.loadNote(any()) } just runs
         every { model.save(any()) } just runs
