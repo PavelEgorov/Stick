@@ -11,6 +11,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.auth.User
 import io.mockk.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
@@ -22,106 +25,84 @@ import org.junit.Rule
 
 class FireStoreProviderTest {
 
-    @get:Rule
-    val taskExecutorRule = InstantTaskExecutorRule()
-
-    private val mockkStore = mockk<FirebaseFirestore>()
-    private val mockkAuth = mockk<FirebaseAuth>()
-    private val mockkCollection = mockk<CollectionReference>()
-    private val mockkUser = mockk<FirebaseUser>()
-
-    private val mockkDocument1 = mockk<DocumentSnapshot>()
-    private val mockkDocument2 = mockk<DocumentSnapshot>()
-    private val mockkDocument3 = mockk<DocumentSnapshot>()
-
-    private val notesList = listOf<Note>(
-        Note("1"),
-        Note("2"),
-        Note("3")
-    )
-
-    private val privader = FireStoreProvider(mockkAuth, mockkStore)
-
-    @Before
-    fun setUp() {
-        clearAllMocks()
-        every { mockkAuth.currentUser } returns mockkUser
-        every { mockkUser.uid } returns ""
-        every {mockkStore.collection(any()).document(any()).collection(any())} returns mockkCollection
-
-        every { mockkDocument1.toObject(Note::class.java) } returns notesList[0]
-        every { mockkDocument2.toObject(Note::class.java) } returns notesList[1]
-        every { mockkDocument3.toObject(Note::class.java) } returns notesList[2]
-    }
-
-    @After
-    fun tearDown() {
-    }
-
-    @Test
-    fun getCurrentUser() = runBlocking {
-        var result: Any? = null
-        every { mockkAuth.currentUser } returns null
-        privader.subscribeToAllNotes().observeForever{
-            result = (it as? NoteResult.Error)?.error
-        }
-
-        assertTrue(result is NoAuthException)
-    }
-
-    @Test
-    fun subscribeToAllNotes() {
-        var result: List<Note>? = null
-        val mockSnapshot = mockk<QuerySnapshot>()
-        val slot = slot<EventListener<QuerySnapshot>>()
-
-        every { mockSnapshot.documents } returns listOf(mockkDocument1, mockkDocument2, mockkDocument3)
-        every { mockkCollection.addSnapshotListener(capture(slot)) } returns mockk()
-        privader.subscribeToAllNotes().observeForever{
-            result = (it as? NoteResult.Success<List<Note>>)?.data
-        }
-        slot.captured.onEvent(mockSnapshot, null)
-        assertEquals(notesList, result)
-    }
-
-    @Test
-    fun `test event fun getNoteById`() {
-        val mockkSnapshot = mockk<DocumentSnapshot>()
-        val slot = slot<OnSuccessListener<DocumentSnapshot>>()
-        var result: Note? = null
-        val mockDocumentReference = mockk<DocumentReference>()
-
-        every { mockkSnapshot.toObject(Note::class.java) } returns notesList[0]
-        every { mockkCollection.document(notesList[0].id) } returns mockDocumentReference
-        every { mockkCollection.document(notesList[0].id).get().addOnSuccessListener(capture(slot)) } returns mockk()
-
-        privader.getNoteById(notesList[0].id).observeForever {
-            result = (it as? NoteResult.Success<Note>)?.data
-        }
-
-        verify(exactly = 1) { mockkCollection.document(notesList[0].id).get() }
-
-        slot.captured.onSuccess(
-            mockkSnapshot
-        )
-
-        assertNotNull(result)
-        assertEquals(notesList[0], result)
-    }
-
-    @Test
-    fun saveNote() {
-        val mockDocumentReference = mockk<DocumentReference>()
-        every { mockkCollection.document(notesList[0].id) } returns mockDocumentReference
-        privader.saveNote(notesList[0])
-        verify(exactly = 1) { mockDocumentReference.set(notesList[0]) }
-    }
-
-    @Test
-    fun deleteNote() {
-        val mockDocumentReference = mockk<DocumentReference>()
-        every { mockkCollection.document(notesList[0].id) } returns mockDocumentReference
-        privader.deleteNote(notesList[0].id)
-        verify(exactly = 1) { mockDocumentReference.delete() }
-    }
+//    @get:Rule
+//    val taskExecutorRule = InstantTaskExecutorRule()
+//
+//    private val mockDb = mockk<FirebaseFirestore>()
+//    private val mockAuth = mockk<FirebaseAuth>()
+//    private val mockCollection = mockk<CollectionReference>()
+//    private val mockUser = mockk<FirebaseUser>()
+//    private val mockDocument1 = mockk<DocumentSnapshot>()
+//    private val mockDocument2 = mockk<DocumentSnapshot>()
+//    private val mockDocument3 = mockk<DocumentSnapshot>()
+//    private val testNotes = listOf(Note(id = "1"), Note(id = "2"), Note(id = "3"))
+//    private val provider: FireStoreProvider = FireStoreProvider(mockAuth, mockDb)
+//
+//    @Before
+//    fun setUp() {
+//        clearMocks(mockCollection, mockDocument1, mockDocument2, mockDocument3)
+//        every { mockAuth.currentUser } returns mockUser
+//        every { mockUser.uid } returns ""
+//        every { mockDb.collection(any()).document(any()).collection(any()) } returns mockCollection
+//        every { mockDocument1.toObject(Note::class.java) } returns testNotes[0]
+//        every { mockDocument2.toObject(Note::class.java) } returns testNotes[1]
+//        every { mockDocument3.toObject(Note::class.java) } returns testNotes[2]
+//    }
+//
+//    @Test
+//    fun `should throw if no auth`() {
+//        var result: Any? = null
+//        every { mockAuth.currentUser } returns null
+//        provider.subscribeToAllNotes().observeForever {
+//            result = (it as? NoteResult.Error)?.error
+//        }
+//        assertTrue(result is NoAuthException)
+//    }
+//
+//    @Test
+//    fun `subscribeAllNotes return notes`() {
+//        var result: List<Note>? = null
+//        val slot = slot<EventListener<QuerySnapshot>>()
+//        val mockSnapshot = mockk<QuerySnapshot>()
+//
+//        every { mockSnapshot.documents } returns listOf(mockDocument1, mockDocument2, mockDocument3)
+//        every { mockCollection.addSnapshotListener(capture(slot)) } returns mockk()
+//
+//        provider.subscribeToAllNotes().observeForever { result = (it as? NoteResult.Success<List<Note>>)?.data }
+//        slot.captured.onEvent(mockSnapshot, null)
+//        assertEquals(testNotes, result)
+//    }
+//
+//    @Test
+//    fun `subscribeAllNotes return error`() {
+//        var result: Throwable? = null
+//        val slot = slot<EventListener<QuerySnapshot>>()
+//        val testError = mockk<FirebaseFirestoreException>()
+//        every { mockCollection.addSnapshotListener(capture(slot)) } returns mockk()
+//        provider.subscribeToAllNotes().observeForever { result = (it as? NoteResult.Error)?.error }
+//        slot.captured.onEvent(null, testError)
+//        assertNotNull(result)
+//        assertEquals(testError, result)
+//    }
+//
+//    @Test
+//    fun `saveNote call document set`() {
+//        val mockDocumentReference: DocumentReference = mockk()
+//        every { mockCollection.document(testNotes[0].id) } returns mockDocumentReference
+//        provider.saveNote(testNotes[0])
+//        verify(exactly = 1) { mockDocumentReference.set(testNotes[0]) }
+//    }
+//
+//    @Test
+//    fun `saveNote return Note`() {
+//        val mockDocumentReference: DocumentReference = mockk()
+//        val slot = slot<OnSuccessListener<in Void>>()
+//        var result: Note? = null
+//        every { mockCollection.document(testNotes[0].id) } returns mockDocumentReference
+//        every { mockDocumentReference.set(testNotes[0]).addOnSuccessListener(capture(slot)) } returns mockk()
+//        provider.saveNote(testNotes[0]).observeForever { result = (it as? NoteResult.Success<Note>)?.data }
+//        slot.captured.onSuccess(null)
+//        assertNotNull(result)
+//        assertEquals(testNotes[0], result)
+//    }
 }
