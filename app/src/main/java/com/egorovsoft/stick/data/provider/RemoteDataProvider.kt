@@ -1,14 +1,14 @@
 package com.egorovsoft.stick.data.provider
 
-import androidx.lifecycle.LiveData
 import com.egorovsoft.stick.activitys.note.NoteResult
 import com.egorovsoft.stick.data.Note
 import com.egorovsoft.stick.data.User
+import kotlinx.coroutines.channels.ReceiveChannel
 
 interface RemoteDataProvider {
-    fun subscribeToAllNotes(): LiveData<NoteResult>
-    fun getNoteById(id: String): LiveData<NoteResult>
-    fun saveNote(note: Note): LiveData<NoteResult>
-    fun getCurrentUser(): LiveData<User?>
-    fun deleteNote(noteId: String): LiveData<NoteResult>
+    fun subscribeToAllNotes(): ReceiveChannel<NoteResult>
+    suspend fun getNoteById(id: String): Note
+    suspend fun saveNote(note: Note): Note
+    suspend fun getCurrentUser(): User?
+    suspend fun deleteNote(noteId: String)
 }

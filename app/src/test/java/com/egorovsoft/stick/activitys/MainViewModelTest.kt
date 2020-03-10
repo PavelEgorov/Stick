@@ -1,7 +1,5 @@
 package com.egorovsoft.stick.activitys
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
 import com.egorovsoft.stick.activitys.note.NoteResult
 import com.egorovsoft.stick.data.Note
 import com.egorovsoft.stick.data.Repository
@@ -9,64 +7,53 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.After
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
-import org.junit.Assert.*
-import org.junit.Rule
-
 class MainViewModelTest {
-    @get:Rule
-    val taskExecutorRule = InstantTaskExecutorRule()
 
-    private val mockknotesRepository = mockk<Repository>()
-    private val mockknotesObserver = MutableLiveData<NoteResult>()
-
+    private val mockRepository = mockk<Repository>()
+    private val notesReceiveChannel = Channel<NoteResult>(Channel.CONFLATED)
     private lateinit var viewModel: MainViewModel
 
     @Before
-    fun setUp() {
-        clearMocks(mockknotesRepository)
-        every { mockknotesRepository.getNotes() } returns mockknotesObserver
-        viewModel = MainViewModel(mockknotesRepository)
-    }
-
-    @After
-    fun tearDown() {
-
+    fun setup() {
+        clearMocks(mockRepository)
+        every { mockRepository.getNotes() } returns notesReceiveChannel
+        viewModel = MainViewModel(mockRepository)
     }
 
     @Test
-    fun `should call getNotes`() {
-        verify(exactly = 1) { mockknotesRepository.getNotes() }
+    fun `should call getNotes once`() {
+        verify(exactly = 1) { mockRepository.getNotes() }
     }
 
     @Test
-    fun `should return notes`() {
-        var result: List<Note>? = null
+    fun `should return Notes`() {
         val testData = listOf(Note("1"), Note("2"))
-        viewModel.getViewState().observeForever {
-            result = it.data
+        runBlocking {
+            notesReceiveChannel.send(NoteResult.Success(testData))
+            val result = viewModel.getViewState().receive()
+            assertEquals(testData, result)
         }
-        mockknotesObserver.value = NoteResult.Success(testData)
-        assertEquals(testData, result)
     }
 
     @Test
     fun `should return error`() {
-        var result: Throwable? = null
         val testData = Throwable("error")
-        viewModel.getViewState().observeForever {
-            result = it?.error
+        runBlocking {
+            notesReceiveChannel.send(NoteResult.Error(testData))
+            val result = viewModel.getErrorChannel().receive()
+            assertEquals(testData, result)
         }
-        mockknotesObserver.value = NoteResult.Error(error = testData)
-        assertEquals(testData, result)
     }
 
     @Test
-    fun `should remove observer`() {
+    fun `should cancel channel`(){
         viewModel.onCleared()
-        assertFalse(mockknotesObserver.hasObservers())
+        assertTrue(notesReceiveChannel.isClosedForReceive)
     }
 }
